@@ -1,4 +1,5 @@
 #include "power.h"
+#include "adc.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 //
@@ -41,28 +42,32 @@ void Power_Off(void)
 
 /*
 ***********************************************************************************
-*	函 数 名: Get_AD( )
+*	函 数 名: Get_Battery( )
 *	功能说明: 监测电池电量
 *	形    参：
 *	返 回 值: 无
 ***********************************************************************************
 */
-//int Get_AD(void)            //监测电池电量
-//{
-//    int i;
-//	uint16_t j;
-//    int val=0;
-//	
-//	
+float Get_Battery(void)            //监测电池电量
+{
+	int val = 0;
+	
+	val = Get_Adc_Average(6,5);		//adc1通道6采样5次取平均值
+	
+  return ((float)val*(3.3/4096)/30*130);
+}
 
-//    for(i=0; i<8; i++)//convert 8 times
-//    {
-//        j=get_ADC1_val();
-//        val=val+j;
-//    }
-//    val=val>>3;//get average
-//    
-//    //myprintf("## ad_val = %d\r\n", val);
+//测试函数
+//void Get_Battery_test(void)
+//{
+//	OS_ERR err;
+//	CPU_SR_ALLOC();
 //	
-//    return val;
+//	while(1)
+//	{
+//		float i;
+//		i = Get_Battery();
+//		printf("电源电压值：%.2f V.    电量：%.1f %%\r\n",i,(100-(12-i)*30));
+//		OSTimeDlyHMSM(0,0,1,0,OS_OPT_TIME_HMSM_STRICT,&err);
+//	}
 //}

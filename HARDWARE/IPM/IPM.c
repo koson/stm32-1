@@ -134,4 +134,17 @@ void    IPM_Stop_AB(void)
 	GPIO_ResetBits(IPM_SVN_PORT, IPM_SVN_IO);
 }
 
+void IPM_Test(void)
+{
+	//		IPM_Start_AB();
+//		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);		
+//		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
+//		IPM_Start_BA();
+//		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);		
+//		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
+//		IPM_Stop_AB();	
+//		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);	
+//		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
+}
+
 

@@ -15,5 +15,6 @@
 
 void Power_Init(void);			//初始化
 void Power_Off(void);		//关机
+float Get_Battery(void);
 
 #endif

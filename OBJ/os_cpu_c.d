@@ -24,12 +24,13 @@
 ..\obj\os_cpu_c.o: ..\UCOSIII\uCOS_CONFIG\app_cfg.h
 ..\obj\os_cpu_c.o: ..\UCOSIII\UCOS_BSP\bsp.h
 ..\obj\os_cpu_c.o: ..\USER\stm32f10x_conf.h
-..\obj\os_cpu_c.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_dma.h
+..\obj\os_cpu_c.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_adc.h
 ..\obj\os_cpu_c.o: ..\USER\stm32f10x.h
 ..\obj\os_cpu_c.o: ..\CORE\core_cm3.h
 ..\obj\os_cpu_c.o: E:\software\C51\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\os_cpu_c.o: ..\USER\system_stm32f10x.h
 ..\obj\os_cpu_c.o: ..\USER\stm32f10x_conf.h
+..\obj\os_cpu_c.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_dma.h
 ..\obj\os_cpu_c.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_fsmc.h
 ..\obj\os_cpu_c.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_gpio.h
 ..\obj\os_cpu_c.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_rcc.h

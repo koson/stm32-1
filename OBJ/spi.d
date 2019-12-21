@@ -6,8 +6,9 @@
 ..\obj\spi.o: E:\software\C51\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\spi.o: ..\USER\system_stm32f10x.h
 ..\obj\spi.o: ..\USER\stm32f10x_conf.h
-..\obj\spi.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_dma.h
+..\obj\spi.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_adc.h
 ..\obj\spi.o: ..\USER\stm32f10x.h
+..\obj\spi.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_dma.h
 ..\obj\spi.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_fsmc.h
 ..\obj\spi.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_gpio.h
 ..\obj\spi.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_rcc.h

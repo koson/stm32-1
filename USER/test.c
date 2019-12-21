@@ -4,7 +4,6 @@
 #include "includes.h"
 #include "wifiap.h"
 #include "usart3.h"
-#include "ap.h"
 #include "malloc.h"
 #include "sram.h"
 #include "usmart.h"
@@ -12,6 +11,7 @@
 #include "ff.h"  
 #include "exfuns.h" 
 
+#include "adc.h"
 #include "acquisiton.h"
 #include "IPM.h"
 #include "power.h"
@@ -33,19 +33,34 @@ CPU_STK START_TASK_STK[START_STK_SIZE];
 //任务函数
 void start_task(void *p_arg);
 
-//Usart3信号量处理任务创建
-#define Usart3_Deal_TASK_PRIO		5
-#define Usart3_Deal_STK_SIZE 		128
-OS_TCB Usart3DealTaskTCB;
-CPU_STK Usart3_Deal_TASK_STK[Usart3_Deal_STK_SIZE];
-void Usart3_Deal_Task(void *p_arg);
+//WIFI信号量处理任务创建
+#define Wifi_Deal_TASK_PRIO		4
+#define Wifi_Deal_STK_SIZE 		128
+OS_TCB WifiDealTaskTCB;
+CPU_STK Wifi_Deal_TASK_STK[Wifi_Deal_STK_SIZE];
+void Wifi_Deal_Task(void *p_arg);
 
+//采集任务创建
+#define Acquisition_Deal_TASK_PRIO		3
+#define Acquisition_Deal_STK_SIZE 		128
+OS_TCB 	AcqusitionDealTaskTCB;
+CPU_STK Acquisition_Deal_TASK_STK[Wifi_Deal_STK_SIZE];
+void 		Acquisition_Deal_Task(void *p_arg);
 
+//监测任务创建
+#define Monitor_Deal_TASK_PRIO		5
+#define Monitor_Deal_STK_SIZE 		128
+OS_TCB 	MonitorDealTaskTCB;
+CPU_STK Monitor_Deal_TASK_STK[Wifi_Deal_STK_SIZE];
+void 		Monitor_Deal_Task(void *p_arg);
 
-OS_TMR 	usart3_deal_tmr;
-//OS_TMR 	usart_deal_tmr;
-void Usart3_Deal_Callback(void *p_tmr, void *p_arg);
-//void Usart_Deal_Callback(void *p_tmr, void *p_arg);
+//Wifi软件定时器
+OS_TMR 	wifi_deal_tmr;
+void Wifi_Deal_Callback(void *p_tmr, void *p_arg);
+
+//监测任务定时器
+OS_TMR 	monitor_deal_tmr;
+void Monitor_Deal_Callback(void *p_tmr, void *p_arg);
 
 
 
@@ -82,25 +97,24 @@ int main(void)
 
 void system_init(void)
 {
-	//u8 res = 0;
-	
 	delay_init();  //时钟初始化
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//中断分组配置
 	uart_init(115200);								//初始化串口波特率为115200
 	usart3_init(115200);							//初始化串口2波特率为115200
-//	atk_8266_init();								//AP初始化
-//	usmart_dev.init(72);		//初始化USMART
 	
 	FSMC_SRAM_Init();			//初始化外部SRAM  
 	my_mem_init(SRAMIN);		//初始化内部内存池
 	my_mem_init(SRAMEX);		//初始化外部内存池
-	
+
+	//flash_init();
+	//rtc_init();
+
+	Adc_Init();
+	Power_Init();
 	IPM_Init();
 	Acquisition_Init();
-	Power_Init();
 	CS5532_Init();
 		
-	usmart_dev.init(SystemCoreClock/1000000);	//初始化USMART	
 	while(SD_Init())
 	{
 		printf("检测SD卡中...\r\n");
@@ -136,14 +150,14 @@ void start_task(void *p_arg)
 	OS_CRITICAL_ENTER();	//进入临界区	
 		
 	//创建Usart3定时器
-	OSTmrCreate((OS_TMR		*)&usart3_deal_tmr,		//Usart3定时器
-                (CPU_CHAR	*)"usart3 deal tmr",		//定时器名字
+	OSTmrCreate((OS_TMR		*)&wifi_deal_tmr,		//Usart3定时器
+                (CPU_CHAR	*)"wifi deal tmr",		//定时器名字
                 (OS_TICK	 )0,			
                 (OS_TICK	 )10,          //10*10=100ms
                 (OS_OPT		 )OS_OPT_TMR_PERIODIC, //周期模式
-                (OS_TMR_CALLBACK_PTR)Usart3_Deal_Callback,//Usart3定时器回调函数
+                (OS_TMR_CALLBACK_PTR)Wifi_Deal_Callback,//Usart3定时器回调函数
                 (void	    *)0,			//参数为0
-                (OS_ERR	    *)&err);		//返回的错误码
+                (OS_ERR	  *)&err);		//返回的错误码
 //	//创建Usart定时器
 //	OSTmrCreate((OS_TMR		*)&usart_deal_tmr,		//Usart定时器
 //                (CPU_CHAR	*)"usart deal tmr",		//定时器名字
@@ -154,18 +168,18 @@ void start_task(void *p_arg)
 //                (void	    *)0,			//参数为0
 //                (OS_ERR	    *)&err);		//返回的错误码
 								
-	OSTmrStart(&usart3_deal_tmr,&err);
+	OSTmrStart(&wifi_deal_tmr,&err);
 //	OSTmrStart(&usart_deal_tmr,&err);
 	
 	//创建Usart3信号量处理任务
-	OSTaskCreate((OS_TCB 	* )&Usart3DealTaskTCB,		
-				 (CPU_CHAR	* )"Usart3 Deal task", 		
-                 (OS_TASK_PTR )Usart3_Deal_Task, 			
+	OSTaskCreate((OS_TCB 	* )&WifiDealTaskTCB,		
+				 (CPU_CHAR	* )"Wifi Deal task", 		
+                 (OS_TASK_PTR )Wifi_Deal_Task, 			
                  (void		* )0,					
-                 (OS_PRIO	  )Usart3_Deal_TASK_PRIO,     	
-                 (CPU_STK   * )&Usart3_Deal_TASK_STK[0],	
-                 (CPU_STK_SIZE)Usart3_Deal_STK_SIZE/10,	
-                 (CPU_STK_SIZE)Usart3_Deal_STK_SIZE,		
+                 (OS_PRIO	  )Wifi_Deal_TASK_PRIO,     	
+                 (CPU_STK   * )&Wifi_Deal_TASK_STK[0],	
+                 (CPU_STK_SIZE)Wifi_Deal_STK_SIZE/10,	
+                 (CPU_STK_SIZE)Wifi_Deal_STK_SIZE,		
                  (OS_MSG_QTY  )0,					
                  (OS_TICK	  )0,					
                  (void   	* )0,				
@@ -177,7 +191,7 @@ void start_task(void *p_arg)
 	OSTaskDel((OS_TCB*)0,&err);	//删除start_task任务自身
 }
 
-void Usart3_Deal_Callback(void *p_tmr, void *p_arg)
+void Wifi_Deal_Callback(void *p_tmr, void *p_arg)
 {
 	if(USART3_RX_STA&0X8000)		//接收到一次数据了
 	{
@@ -248,25 +262,17 @@ void Usart3_Deal_Callback(void *p_tmr, void *p_arg)
 //}
 
 //AD测试
-void Usart3_Deal_Task(void *p_arg)
+void Wifi_Deal_Task(void *p_arg)
 {
 	OS_ERR err;
-//	CPU_SR_ALLOC();
-	
-	AD_POWER_EN= 0;
+	CPU_SR_ALLOC();
 	
 	while(1)
 	{
-		IPM_Start_AB();
-		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);		
-		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
-		IPM_Start_BA();
-		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);		
-		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
-		IPM_Stop_AB();	
-		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);	
-		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
-		
+		float i;
+		i = Get_Battery();
+		printf("电源电压值：%.2f V.    电量：%.1f %%\r\n",i,(100-(12-i)*30));
+		OSTimeDlyHMSM(0,0,1,0,OS_OPT_TIME_HMSM_STRICT,&err);
 	}
 }
 

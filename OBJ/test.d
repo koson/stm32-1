@@ -6,8 +6,9 @@
 ..\obj\test.o: E:\software\C51\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\test.o: ..\USER\system_stm32f10x.h
 ..\obj\test.o: ..\USER\stm32f10x_conf.h
-..\obj\test.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_dma.h
+..\obj\test.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_adc.h
 ..\obj\test.o: ..\USER\stm32f10x.h
+..\obj\test.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_dma.h
 ..\obj\test.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_fsmc.h
 ..\obj\test.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_gpio.h
 ..\obj\test.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_rcc.h
@@ -44,7 +45,6 @@
 ..\obj\test.o: ..\HARDWARE\ESP8266\wifiap.h
 ..\obj\test.o: ..\HARDWARE\USART3\usart3.h
 ..\obj\test.o: ..\MALLOC\malloc.h
-..\obj\test.o: ..\HARDWARE\ESP8266\ap.h
 ..\obj\test.o: ..\HARDWARE\SRAM\sram.h
 ..\obj\test.o: ..\USMART\usmart.h
 ..\obj\test.o: ..\USMART\usmart_str.h
@@ -53,6 +53,7 @@
 ..\obj\test.o: ..\FATFS\src\integer.h
 ..\obj\test.o: ..\FATFS\src\ffconf.h
 ..\obj\test.o: ..\FATFS\exfuns\exfuns.h
+..\obj\test.o: ..\HARDWARE\ADC\adc.h
 ..\obj\test.o: ..\HARDWARE\acquisition\acquisiton.h
 ..\obj\test.o: ..\HARDWARE\IPM\IPM.h
 ..\obj\test.o: ..\HARDWARE\Power\power.h

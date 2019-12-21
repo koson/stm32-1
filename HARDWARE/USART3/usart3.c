@@ -19,7 +19,7 @@
 
 //串口接收缓存区 	
 u8 USART3_RX_BUF[USART3_MAX_RECV_LEN]; 				//接收缓冲,最大USART3_MAX_RECV_LEN个字节.
-u8  USART3_TX_BUF[USART3_MAX_SEND_LEN]; 			//发送缓冲,最大USART3_MAX_SEND_LEN字节
+u8 USART3_TX_BUF[USART3_MAX_SEND_LEN]; 			//发送缓冲,最大USART3_MAX_SEND_LEN字节
 
 //通过判断接收连续2个字符之间的时间差不大于10ms来决定是不是一次连续的数据.
 //如果2个字符接收间隔超过10ms,则认为不是1次连续数据.也就是超过10ms没有接收到
@@ -46,7 +46,8 @@ void USART3_IRQHandler(void)
 					TIM_Cmd(TIM7,ENABLE);//使能定时器7
 				}
 				USART3_RX_BUF[USART3_RX_STA++]=res;	//记录接收到的值	 
-			}else 
+			}
+			else
 			{
 				USART3_RX_STA|=1<<15;				//强制标记接收完成
 			} 
@@ -69,16 +70,16 @@ void usart3_init(u32 bound)
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3,ENABLE); //串口3时钟使能
 
  	USART_DeInit(USART3);  //复位串口3
-		 //USART3_TX   PB10
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; //PB10
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	//复用推挽输出
-  GPIO_Init(GPIOB, &GPIO_InitStructure); //初始化PB10
-   
+	//USART3_TX   PB10
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; //PB10
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	//复用推挽输出
+    GPIO_Init(GPIOB, &GPIO_InitStructure); //初始化PB10
+
     //USART3_RX	  PB11
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
-  GPIO_Init(GPIOB, &GPIO_InitStructure);  //初始化PB11
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
+    GPIO_Init(GPIOB, &GPIO_InitStructure);  //初始化PB11
 	
 	USART_InitStructure.USART_BaudRate = bound;//波特率一般设置为9600;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//字长为8位数据格式
@@ -93,7 +94,7 @@ void usart3_init(u32 bound)
 	USART_Cmd(USART3, ENABLE);                    //使能串口 
 	
 	//使能接收中断
-  USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);//开启中断   
+    USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);//开启中断
 	
 	//设置中断优先级
 	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
@@ -103,7 +104,7 @@ void usart3_init(u32 bound)
 	NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
 	
 	
-	TIM7_Int_Init(1000-1,7200-1);		//10ms中断
+	TIM7_Int_Init(100-1,7200-1);		//10ms中断
 	USART3_RX_STA=0;		//清零
 	TIM_Cmd(TIM7,DISABLE);			//关闭定时器7
 

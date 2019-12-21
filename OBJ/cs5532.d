@@ -4,8 +4,9 @@
 ..\obj\cs5532.o: E:\software\C51\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\cs5532.o: ..\USER\system_stm32f10x.h
 ..\obj\cs5532.o: ..\USER\stm32f10x_conf.h
-..\obj\cs5532.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_dma.h
+..\obj\cs5532.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_adc.h
 ..\obj\cs5532.o: ..\USER\stm32f10x.h
+..\obj\cs5532.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_dma.h
 ..\obj\cs5532.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_fsmc.h
 ..\obj\cs5532.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_gpio.h
 ..\obj\cs5532.o: ..\FWLIB\STM32F10x_FWLib\inc\stm32f10x_rcc.h
