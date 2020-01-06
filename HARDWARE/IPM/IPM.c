@@ -9,7 +9,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //初始化IPM
-//IPM_POWER_EN（PA2）
+//IPM_POWER_EN（PA2）	0:on; 1:off.
 //IPM_SVP（PE2）、IPM_SUP（PC13）、IPM_SVN（PC0）、IPM_SUN（PF9）
 
 void IPM_Init(void)
@@ -134,9 +134,17 @@ void    IPM_Stop_AB(void)
 	GPIO_ResetBits(IPM_SVN_PORT, IPM_SVN_IO);
 }
 
-void IPM_Test(void)
-{
-	//		IPM_Start_AB();
+//测试函数
+//void IPM_Test(void)
+//{
+//	OS_ERR err;
+//	CPU_SR_ALLOC();
+//	
+//	IPM_POWER_EN= 0;
+//	
+//	while(1)
+//	{
+//		IPM_Start_AB();
 //		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);		
 //		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
 //		IPM_Start_BA();
@@ -145,6 +153,8 @@ void IPM_Test(void)
 //		IPM_Stop_AB();	
 //		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);	
 //		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
-}
+//		
+//	}
+//}
 
 

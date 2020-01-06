@@ -332,7 +332,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\USER;..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\STM32F10x_FWLib\inc;..\FWLIB\STM32F10x_FWLib\inc;..\UCOSIII\uC-CPU;..\UCOSIII\uC-LIB;..\UCOSIII\uCOS-III;..\UCOSIII\UCOS_BSP;..\UCOSIII\uCOS_CONFIG;..\UCOSIII\uCOS-III\Source;..\UCOSIII\uC-CPU\ARM-Cortex-M3\RealView;..\UCOSIII\uC-LIB\Ports\ARM-Cortex-M3\RealView;..\UCOSIII\uCOS-III\Ports\ARM-Cortex-M3\Generic\RealView;..\MALLOC;..\HARDWARE;..\HARDWARE\TIMER;..\HARDWARE\USART3;..\HARDWARE\ESP8266;..\HARDWARE\IPM;..\HARDWARE\Power;..\HARDWARE\SRAM;..\FATFS\exfuns;..\FATFS\src;..\FATFS;..\HARDWARE\SDIO;..\USMART;..\HARDWARE\W25QXX;..\HARDWARE\SPI;..\HARDWARE\acquisition;..\HARDWARE\CS5532</IncludePath>
+              <IncludePath>..\USER;..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\STM32F10x_FWLib\inc;..\FWLIB\STM32F10x_FWLib\inc;..\UCOSIII\uC-CPU;..\UCOSIII\uC-LIB;..\UCOSIII\uCOS-III;..\UCOSIII\UCOS_BSP;..\UCOSIII\uCOS_CONFIG;..\UCOSIII\uCOS-III\Source;..\UCOSIII\uC-CPU\ARM-Cortex-M3\RealView;..\UCOSIII\uC-LIB\Ports\ARM-Cortex-M3\RealView;..\UCOSIII\uCOS-III\Ports\ARM-Cortex-M3\Generic\RealView;..\MALLOC;..\HARDWARE;..\HARDWARE\TIMER;..\HARDWARE\USART3;..\HARDWARE\ESP8266;..\HARDWARE\IPM;..\HARDWARE\Power;..\HARDWARE\SRAM;..\FATFS\exfuns;..\FATFS\src;..\FATFS;..\HARDWARE\SDIO;..\USMART;..\HARDWARE\W25QXX;..\HARDWARE\SPI;..\HARDWARE\acquisition;..\HARDWARE\CS5532;..\HARDWARE\ADC;..\HARDWARE\DATA</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -416,11 +416,6 @@
               <FilePath>..\HARDWARE\TIMER\timer.c</FilePath>
             </File>
             <File>
-              <FileName>ap.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\ESP8266\ap.c</FilePath>
-            </File>
-            <File>
               <FileName>sram.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\SRAM\sram.c</FilePath>
@@ -449,6 +444,16 @@
               <FileName>cs5532.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\CS5532\cs5532.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\ADC\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\DATA\data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -549,6 +554,11 @@
               <FileName>stm32f10x_dma.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\FWLIB\STM32F10x_FWLib\src\stm32f10x_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FWLIB\STM32F10x_FWLib\src\stm32f10x_adc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -769,26 +779,6 @@
               <FileName>os_cfg_app.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\UCOSIII\uCOS_CONFIG\os_cfg_app.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>USMART</GroupName>
-          <Files>
-            <File>
-              <FileName>usmart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USMART\usmart.c</FilePath>
-            </File>
-            <File>
-              <FileName>usmart_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USMART\usmart_config.c</FilePath>
-            </File>
-            <File>
-              <FileName>usmart_str.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USMART\usmart_str.c</FilePath>
             </File>
           </Files>
         </Group>

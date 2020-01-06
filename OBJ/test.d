@@ -58,3 +58,4 @@
 ..\obj\test.o: ..\HARDWARE\IPM\IPM.h
 ..\obj\test.o: ..\HARDWARE\Power\power.h
 ..\obj\test.o: ..\HARDWARE\CS5532\cs5532.h
+..\obj\test.o: ..\HARDWARE\DATA\data.h

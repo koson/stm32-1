@@ -16,8 +16,10 @@
 #include "IPM.h"
 #include "power.h"
 #include "cs5532.h"
-
+//#include "data.h"
+#include "string.h"
 #include "includes.h"
+#include "data.h"
 
 void system_init(void);
 
@@ -33,7 +35,7 @@ CPU_STK START_TASK_STK[START_STK_SIZE];
 //任务函数
 void start_task(void *p_arg);
 
-//WIFI信号量处理任务创建
+//WIFI信号处理任务创建
 #define Wifi_Deal_TASK_PRIO		4
 #define Wifi_Deal_STK_SIZE 		128
 OS_TCB WifiDealTaskTCB;
@@ -62,7 +64,7 @@ void Wifi_Deal_Callback(void *p_tmr, void *p_arg);
 OS_TMR 	monitor_deal_tmr;
 void Monitor_Deal_Callback(void *p_tmr, void *p_arg);
 
-
+extern DAQ_PARA DateACQPara;      // JDY 参数结构体
 
 
 //main函数	  					
@@ -108,12 +110,14 @@ void system_init(void)
 
 	//flash_init();
 	//rtc_init();
-
-	Adc_Init();
+	//exit_init();
+	
 	Power_Init();
-	IPM_Init();
+	Adc_Init();
 	Acquisition_Init();
 	CS5532_Init();
+	IPM_Init();
+	Date_ACQ_Para_Init();
 		
 	while(SD_Init())
 	{
@@ -122,7 +126,9 @@ void system_init(void)
 	printf("SD卡已准备 \r\n");	
 	exfuns_init();							//为fatfs相关变量申请内存	
   f_mount(fs[0],"0:",1); 					//挂载SD卡 
-			
+	
+//	AP_Init();
+	
 }
 
 //开始任务函数
@@ -153,7 +159,7 @@ void start_task(void *p_arg)
 	OSTmrCreate((OS_TMR		*)&wifi_deal_tmr,		//Usart3定时器
                 (CPU_CHAR	*)"wifi deal tmr",		//定时器名字
                 (OS_TICK	 )0,			
-                (OS_TICK	 )10,          //10*10=100ms
+                (OS_TICK	 )100,          //10*10=100ms
                 (OS_OPT		 )OS_OPT_TMR_PERIODIC, //周期模式
                 (OS_TMR_CALLBACK_PTR)Wifi_Deal_Callback,//Usart3定时器回调函数
                 (void	    *)0,			//参数为0
@@ -191,75 +197,43 @@ void start_task(void *p_arg)
 	OSTaskDel((OS_TCB*)0,&err);	//删除start_task任务自身
 }
 
+//有人WIFI
+//WIFI名字：CUGB	125IP		密码：cugb125126
+//IP:192.168.1.1	端口号：8899
+//命令形式：S0 = {0:1,1:2};
 void Wifi_Deal_Callback(void *p_tmr, void *p_arg)
 {
+	CPU_SR_ALLOC();
+	OS_CRITICAL_ENTER();
 	if(USART3_RX_STA&0X8000)		//接收到一次数据了
-	{
-		u16 rlen=0;
+	{		
+		u8 *p;
+		p=mymalloc(SRAMEX,32);							//申请32字节内存
 		
-		rlen=USART3_RX_STA&0X7FFF;	//得到本次接收到的数据长度
-		USART3_RX_BUF[rlen]=0;		//添加结束符 
-		USART3_RX_STA=0;
-		
-		printf("%s",USART3_RX_BUF);
-		
-		if(USART3_RX_BUF[11]=='A' & USART3_RX_BUF[12]=='P')
-		{
-			printf("AP指令\r\n");
+		//Wifi通信测试
+		//测试格式：T+数据 → 返回数据
+		if(USART3_RX_BUF[0] == 'T'){
+			p = atk_8266_check_cmd("T") + 1;
+			u3_printf("%s\r\n",p+1);
 		}
-		else
-		{
-			printf("未知指令\r\n");
-			printf("%c %c",USART3_RX_BUF[11],USART3_RX_BUF[12]);
+		//设置参数
+		//命令格式：S0 = {0:1,1:2}
+		else if(USART3_RX_BUF[0] == 'S'){
+			p = atk_8266_check_cmd("{")+1;
+			Set_Data((u8)USART3_RX_BUF[1]-48,p);
 		}
+		//获取数据
+		else if(USART3_RX_BUF[0] == 'G'){
+			Data_Return((u8)USART3_RX_BUF[1] - 48);
+		}
+		
+		USART3_RX_STA=0;	//标志位清零
+		myfree(SRAMEX,p);		//释放内存 		
 	}	
+	OS_CRITICAL_EXIT();
 }
 
-//void Usart_Deal_Callback(void *p_tmr, void *p_arg)
-//{
-//	OS_ERR err;
-//	printf("AP指令\r\n");
-//	OSTimeDlyHMSM(0,0,5,0,OS_OPT_TIME_HMSM_STRICT,&err);
-//	
-////	if(USART_RX_STA&0X8000)		//接收到一次数据了
-////	{		
-////		printf("%s\r\n",USART_RX_BUF);
-////		USART_RX_STA=0;
-////		
-////		if(USART_RX_BUF[0]=='A' & USART_RX_BUF[1]=='P')
-////		{
-////			printf("AP指令\r\n");
-////		}
-////		else
-////		{
-////			printf("未知指令\r\n");
-////			printf("%c %c",USART_RX_BUF[11],USART_RX_BUF[12]);
-////		}
-////	}	
-//}
 
-//IPM测试
-//void Usart3_Deal_Task(void *p_arg)
-//{
-//	OS_ERR err;
-////	CPU_SR_ALLOC();
-//	
-//	IPM_POWER_EN= 0;
-//	
-//	while(1)
-//	{
-//		IPM_Start_AB();
-//		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);		
-//		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
-//		IPM_Start_BA();
-//		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);		
-//		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
-//		IPM_Stop_AB();	
-//		printf("SUP：%lu；SVP：%lu；SUN：%lu；SUN：%lu。\r\n",IPM_SUP,IPM_SVP,IPM_SUN,IPM_SVN);	
-//		OSTimeDlyHMSM(0,0,2,0,OS_OPT_TIME_HMSM_STRICT,&err);
-//		
-//	}
-//}
 
 //AD测试
 void Wifi_Deal_Task(void *p_arg)
@@ -269,11 +243,10 @@ void Wifi_Deal_Task(void *p_arg)
 	
 	while(1)
 	{
-		float i;
-		i = Get_Battery();
-		printf("电源电压值：%.2f V.    电量：%.1f %%\r\n",i,(100-(12-i)*30));
+		FILE *fp;
+		printf("11111\r\n");
 		OSTimeDlyHMSM(0,0,1,0,OS_OPT_TIME_HMSM_STRICT,&err);
-	}
+	}   
 }
 
 
